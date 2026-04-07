@@ -9,4 +9,7 @@ answers.
 
 * Initial commit
 * Added FastAPI setup and basic route
-* Created a questions file for testing frontend
+* Created a questions.json file for testing frontend
+* Added home.html to start building the frontend
+    * Next steps will include a user-configurable frontend
+    * (e.g., choose number of questions, category, difficulty, and type)

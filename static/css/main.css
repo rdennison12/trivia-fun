@@ -26,6 +26,12 @@ body {
 
 h1 {
     margin-bottom: 8px;
+    color: white;
+}
+
+.card-subtitle, h6 {
+    margin-bottom: 4px;
+    color: var(--muted);
 }
 
 p {
@@ -41,7 +47,8 @@ a {
     border-radius: 16px;
     padding: 16px;
     margin-top: 16px;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    width: 650px;
 }
 
 .grid {
@@ -66,8 +73,8 @@ button {
     width: 100%;
     padding: 10px;
     border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text);
 }
 
@@ -123,7 +130,7 @@ button:disabled {
 .answer {
     padding: 6px 10px;
     border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .answer.correct {

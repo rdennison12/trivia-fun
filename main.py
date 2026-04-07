@@ -23,8 +23,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-def shuffle_filter(l):
-    shuffled = list(l)
+def shuffle_filter(answers):
+    shuffled = list(answers)
     random.shuffle(shuffled)
     return shuffled
 
