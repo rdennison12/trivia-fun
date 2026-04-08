@@ -4,24 +4,40 @@ from typing import Any
 import httpx
 
 
-async def get_opentdb_config() -> dict[str, Any] | None:
+async def get_opentdb_config(client: httpx.AsyncClient) -> dict[str, Any] | None:
     """
     Fetch API configuration from Open Trivia Database.
 
     Returns:
         Dictionary containing API configuration or None if the request fails.
-
     """
-    url = "https://opentdb.com/api_config.php"
+    categories_url = "https://opentdb.com/api_category.php"
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url)
-            response.raise_for_status()
-            return response.json()
-    except httpx.HTTPError as e:
-        print(f"HTTP error occurred: {e}")
-        return None
-    except json.JSONDecodeError as e:
-        print(f"JSON decode error: {e}")
+        response = await client.get(categories_url)
+        response.raise_for_status()
+        categories_data = response.json()
+
+        # Format categories as {id: name} as expected by the template
+        categories = {
+            str(cat["id"]): cat["name"]
+            for cat in categories_data.get("trivia_categories", [])
+        }
+
+        # OpenTDB has fixed difficulties and types
+        difficulties = ["easy", "medium", "hard"]
+        types = ["multiple", "boolean"]
+        type_labels = {
+            "multiple": "Multiple Choice",
+            "boolean": "True / False",
+        }
+
+        return {
+            "categories": categories,
+            "difficulties": difficulties,
+            "types": types,
+            "type_labels": type_labels,
+        }
+    except (httpx.HTTPError, json.JSONDecodeError, KeyError) as e:
+        print(f"Error occurred while fetching OpenTDB config: {e}")
         return None

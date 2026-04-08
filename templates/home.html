@@ -3,57 +3,81 @@
 {% block content %}
 <div class="container">
     <h1 style="text-align: center;" class="my-4">Trivia Fun</h1>
-    <div id="results">
-        {% for q in questions %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h6 class="card-subtitle">
-                    #{{ loop.index }} &bull; {{ q.category }} &bull; {{ q.difficulty | capitalize }} &bull; {{ q.type |
-                    capitalize }}
-                </h6>
-                <p class="card-text">{{ q.question | safe }}</p>
-                <div class="list-group answers">
-                    {% set answers = q.incorrect_answers + [q.correct_answer] %}
-                    {% for answer in answers | shuffle %}
-                    <button type="button" class="list-group-item list-group-item-action answer-btn"
-                            data-correct="{{ 'true' if answer == q.correct_answer else 'false' }}">
-                        {{ answer | safe }}
-                    </button>
-                    {% endfor %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="triviaConfigForm" class="card p-4 shadow">
+                <h3 class="mb-4">Configure Your Quiz</h3>
+
+                <div class="mb-3">
+                    <label for="questionCount" class="form-label">Number of Questions:</label>
+                    <input type="number" class="form-control" id="questionCount" name="amount"
+                           min="1" max="50" value="10" required>
+                    <div class="form-text">Choose between 1 and 50 questions</div>
                 </div>
-            </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category:</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">Any Category</option>
+                        {% for category_id, category_name in config.categories.items() %}
+                        <option value="{{ category_id }}">{{ category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="difficulty" class="form-label">Difficulty:</label>
+                    <select class="form-select" id="difficulty" name="difficulty">
+                        <option value="">Any Difficulty</option>
+                        {% for diff in config.difficulties %}
+                        <option value="{{ diff }}">{{ diff.capitalize() }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="type" class="form-label">Type:</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="">Any Type</option>
+                        {% for question_type in config.types %}
+                        <option value="{{ question_type }}">{{ config.type_labels[question_type] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" id="startQuizBtn" class="btn btn-primary btn-lg w-100">Start Quiz</button>
+            </form>
         </div>
-        {% endfor %}
     </div>
+
 </div>
 {% endblock %}
 
 {% block script %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const questions = document.querySelectorAll('.card');
+    document.getElementById('triviaConfigForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-        questions.forEach(q => {
-            const buttons = q.querySelectorAll('.answer-btn');
+        const form = event.target;
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
 
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    // Disable all buttons in this question
-                    buttons.forEach(b => {
-                        b.disabled = true;
-                        // Highlight the correct answer
-                        if (b.dataset.correct === 'true') {
-                            b.classList.add('list-group-item-success');
-                        }
-                    });
-
-                    // If wrong answer was selected, highlight it red
-                    if (btn.dataset.correct === 'false') {
-                        btn.classList.add('list-group-item-danger');
-                    }
-                });
-            });
-        });
+        // Retrieve the config from the backend
+        try {
+            const response = await fetch('/api/config');
+            if (response.ok) {
+                const config = await response.json();
+                console.log('Retrieved config:', config);
+                // Redirect to the /quiz endpoint to start the quiz
+                window.location.href = `/quiz?${params.toString()}`;
+            } else {
+                alert('Failed to retrieve config from backend');
+            }
+        } catch (error) {
+            console.error('Error fetching config:', error);
+            alert('An error occurred. Please try again.');
+        }
     });
 </script>
 {% endblock %}

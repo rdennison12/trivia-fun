@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4 text-center">Quiz</h1>
+
+    {% if questions %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% for question in questions %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Question {{ (page - 1) * 4 + loop.index }}</h5>
+                    <p class="card-text">{{ question.question | safe }}</p>
+                    <div class="list-group" data-correct-answer="{{ question.correct_answer }}">
+                        {% set all_answers = question.incorrect_answers %}
+                        {% set _ = all_answers.append(question.correct_answer) %}
+                        {% for answer in all_answers | sort %}
+                        <button type="button" class="list-group-item list-group-item-action answer-btn"
+                                data-answer="{{ answer }}">{{ answer | safe }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if total_pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="/quiz?amount={{ amount }}&category={{ category }}&difficulty={{ difficulty }}&type={{ type }}&page={{ page - 1 }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page }} of {{ total_pages }}</span>
+                    </li>
+
+                    {% if page < total_pages %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="/quiz?amount={{ amount }}&category={{ category }}&difficulty={{ difficulty }}&type={{ type }}&page={{ page + 1 }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        No questions found. Try different settings.
+        <br>
+        <a href="/" class="btn btn-primary mt-3">Go Back</a>
+    </div>
+    {% endif %}
+    <a href="/" class="btn btn-primary mt-3">Go Back</a>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const answerButtons = document.querySelectorAll('.answer-btn');
+
+        answerButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const listGroup = this.parentElement;
+                const correctAnswer = listGroup.getAttribute('data-correct-answer');
+                const selectedAnswer = this.getAttribute('data-answer');
+
+                if (selectedAnswer === correctAnswer) {
+                    this.style.color = 'green';
+                    this.style.fontWeight = 'bold';
+
+                    // Disable all buttons in this question group
+                    const buttons = listGroup.querySelectorAll('.answer-btn');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.cursor = 'not-allowed';
+                    });
+                } else {
+                    this.style.color = 'red';
+                    this.style.fontWeight = 'bold';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

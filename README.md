@@ -11,5 +11,6 @@ answers.
 * Added FastAPI setup and basic route
 * Created a questions.json file for testing frontend
 * Added home.html to start building the frontend
-    * Next steps will include a user-configurable frontend
-    * (e.g., choose number of questions, category, difficulty, and type)
+* Created the backend to get the questions from the external API
+    * Added frontend to display questions and handle user interactions
+    * Implemented user-configurable frontend (e.g., choose number of questions, category, difficulty, and type)
