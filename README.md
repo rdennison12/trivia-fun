@@ -14,3 +14,4 @@ answers.
 * Created the backend to get the questions from the external API
     * Added frontend to display questions and handle user interactions
     * Implemented user-configurable frontend (e.g., choose number of questions, category, difficulty, and type)
+* Created a way for the user to restart the quiz with the same questions.

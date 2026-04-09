@@ -23,12 +23,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-# Configure this function to use the external_api.py to show options for the user.
-# Goals for this iteration
-# Add a call to the API to fetch questions and associated answers based on user preferences
-# Add the appropriate fields to the home.html template
-
-
 @app.get("/")
 async def home(request: Request):
     config = await get_opentdb_config(request.app.state.http)

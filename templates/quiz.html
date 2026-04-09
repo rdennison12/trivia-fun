@@ -6,11 +6,14 @@
 
     {% if questions %}
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-8" id="quiz-container">
             {% for question in questions %}
             <div class="card mb-4 shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Question {{ (page - 1) * 4 + loop.index }}</h5>
+                    <h5 class="card-title">
+                        Question {{ (page - 1) * 4 + loop.index }} - {{ question.category }} ({{ question.difficulty |
+                        capitalize }}, {{ question.type | capitalize }})
+                    </h5>
                     <p class="card-text">{{ question.question | safe }}</p>
                     <div class="list-group" data-correct-answer="{{ question.correct_answer }}">
                         {% set all_answers = question.incorrect_answers %}
@@ -57,11 +60,20 @@
         <a href="/" class="btn btn-primary mt-3">Go Back</a>
     </div>
     {% endif %}
-    <a href="/" class="btn btn-primary mt-3">Go Back</a>
+    <div class="text-center mt-3">
+        <a href="/" class="btn btn-primary">Go Back</a>
+        {% if questions %}
+        <a href="/quiz?amount={{ amount }}&category={{ category }}&difficulty={{ difficulty }}&type={{ type }}"
+           class="btn btn-success">Restart Quiz (Shuffled)</a>
+        {% endif %}
+    </div>
 </div>
+
+
 {% endblock %}
 
 {% block script %}
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const answerButtons = document.querySelectorAll('.answer-btn');
